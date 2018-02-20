@@ -76,6 +76,13 @@ public class CameraActivity extends Activity {
         Camera.Parameters p = mCamera.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
         p.setJpegQuality(100);
+        List<Camera.Size> sizes = p.getSupportedPictureSizes();
+        Camera.Size size = sizes.get(0);
+        for (int i = 0; i < sizes.size(); i++) {
+            if (sizes.get(i).width > size.width)
+                size = sizes.get(i);
+        }
+        p.setPictureSize(size.width, size.height);
 
         mCamera.setParameters(p);
 

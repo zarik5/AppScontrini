@@ -8,7 +8,7 @@ import java.util.Locale;
  * Object passed to the manager to avoid performing unnecessary operations
  * and consequently reduce time (time depends primarily on image scale)
  * @author Michelon
- * @author EDIT: Zaglia
+ * @author Zaglia
  */
 public class OcrOptions {
 
