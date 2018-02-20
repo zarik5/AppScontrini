@@ -2,10 +2,7 @@ package com.ing.software.ticketapp;
 
 import android.util.Log;
 
-import java.util.Currency;
 import java.util.Date;
-
-import database.DataManager;
 
 /**
  * Created by Nicola on 24/01/2018.
@@ -72,6 +69,7 @@ public class Singleton {
 
     public void setTakenPicure(byte[] value){
         pictureTaken = value;
+        Log.d("DATA SIZE:", pictureTaken.length + "");
     }
 
 

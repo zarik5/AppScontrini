@@ -120,6 +120,10 @@ public class TicketSchemeIT_PSCC implements TicketScheme{
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: " + total);
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + normCash);
+                OcrUtils.log(3, "TicketScheme_" + tag, "subtotal is: " + subtotal);
                 boolean cashPrices = normCash.compareTo(productsSum) == 0;
                 boolean cashAmount = normCash.compareTo(total) == 0;
                 boolean pricesAmount = productsSum.compareTo(total) == 0;
@@ -160,6 +164,9 @@ public class TicketSchemeIT_PSCC implements TicketScheme{
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: " + total);
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + cash);
                 boolean cashPrices = normCash.compareTo(productsSum) == 0;
                 boolean cashAmount = normCash.compareTo(total) == 0;
                 boolean pricesAmount = productsSum.compareTo(total) == 0;
@@ -179,6 +186,9 @@ public class TicketSchemeIT_PSCC implements TicketScheme{
                 BigDecimal productsSum = Stream.of(products)
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: " + total);
+                OcrUtils.log(3, "TicketScheme_" + tag, "subtotal is: " + subtotal);
                 boolean pricesAmount = productsSum.compareTo(total) == 0;
                 boolean subtotalAmount = subtotal.compareTo(total) == 0;
                 boolean subtotalPrices = subtotal.compareTo(productsSum) == 0;
@@ -196,6 +206,9 @@ public class TicketSchemeIT_PSCC implements TicketScheme{
                 }
             } else if (cash != null && subtotal != null && change != null) {
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: " + total);
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + normCash);
+                OcrUtils.log(3, "TicketScheme_" + tag, "subtotal is: " + subtotal);
                 boolean cashAmount = normCash.compareTo(total) == 0;
                 boolean subtotalAmount = subtotal.compareTo(total) == 0;
                 boolean subtotalCash = subtotal.compareTo(normCash) == 0;
@@ -220,6 +233,10 @@ public class TicketSchemeIT_PSCC implements TicketScheme{
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: null");
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + normCash);
+                OcrUtils.log(3, "TicketScheme_" + tag, "subtotal is: " + subtotal);
                 boolean cashPrices = normCash.compareTo(productsSum) == 0;
                 boolean subtotalCash = subtotal.compareTo(normCash) == 0;
                 boolean subtotalPrices = subtotal.compareTo(productsSum) == 0;
@@ -237,6 +254,9 @@ public class TicketSchemeIT_PSCC implements TicketScheme{
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: null");
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + normCash);
                 boolean cashPrices = normCash.compareTo(productsSum) == 0;
                 if (cashPrices) {
                     acceptedList = true;
@@ -246,6 +266,9 @@ public class TicketSchemeIT_PSCC implements TicketScheme{
                 BigDecimal productsSum = Stream.of(products)
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: null");
+                OcrUtils.log(3, "TicketScheme_" + tag, "subtotal is: " + subtotal);
                 boolean subtotalPrices = subtotal.compareTo(productsSum) == 0;
                 if (subtotalPrices) {
                     acceptedList = true;
@@ -253,6 +276,9 @@ public class TicketSchemeIT_PSCC implements TicketScheme{
                 }
             } else if (cash != null && subtotal != null && change != null) {
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: null");
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + normCash);
+                OcrUtils.log(3, "TicketScheme_" + tag, "subtotal is: " + subtotal);
                 boolean subtotalCash = subtotal.compareTo(normCash) == 0;
                 if (subtotalCash) {
                     return new Scored<>(TWO_VALUES, new Pair<>(null, subtotal));

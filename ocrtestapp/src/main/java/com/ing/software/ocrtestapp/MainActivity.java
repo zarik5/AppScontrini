@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.annimon.stream.Stream;
 import com.ing.software.common.Ref;
 import com.ing.software.ocr.ImageProcessor;
 import com.ing.software.ocr.OcrManager;
@@ -29,6 +30,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,6 +57,12 @@ public class MainActivity extends AppCompatActivity implements OcrResultReceiver
     private int counter = 0;
     private final PermissionsHandler permissionsHandler = new PermissionsHandler(this);
     private static final Semaphore sem = new Semaphore(0);
+    List<String> images = Stream.of(DataSet.dataSet)
+            .map(string -> string.first).toList();
+    List<BigDecimal> prices = Stream.of(DataSet.dataSet)
+            .map(price -> price.second).toList();
+    int correct = 0;
+    int wrong = 0;
 
 
     @Override
@@ -142,10 +151,25 @@ public class MainActivity extends AppCompatActivity implements OcrResultReceiver
                 s = "\nStarting img: " + resultData.getString(IMAGE_RECEIVED);
                 break;
             case STATUS_FINISHED:
-                //Toast.makeText(this, "Done. \nAmount is: " + resultData.getString(AMOUNT_RECEIVED) +
-                //        "\nElapsed time is: " + resultData.getString(DURATION_RECEIVED) + " seconds", Toast.LENGTH_LONG).show();
+                BigDecimal price = null;
+                String result = "FAILURE";
+                if (images.contains(resultData.getString(IMAGE_RECEIVED))) {
+                    int index = images.indexOf(resultData.getString(IMAGE_RECEIVED));
+                    price = prices.get(index).setScale(2, RoundingMode.HALF_UP);
+                    try {
+                        if (price.compareTo(new BigDecimal(resultData.getString(AMOUNT_RECEIVED))) == 0) {
+                            result = "SUCCESS";
+                            ++correct;
+                        } else {
+                            result = "WRONG should be: " + price.setScale(2, RoundingMode.HALF_UP);
+                            ++wrong;
+                        }
+                    } catch (Exception e) {
+                        //BAh
+                    }
+                }
                 s = "\nAmount is: " + resultData.getString(AMOUNT_RECEIVED) +
-                        "\nRestored amount is: " + resultData.getString(AMOUNT_RESTORED_RECEIVED) +
+                        "\nResult is: " + result +
                         "\nDate is: " + resultData.getString(DATE_RECEIVED);
                 break;
             case STATUS_ERROR:
@@ -155,9 +179,11 @@ public class MainActivity extends AppCompatActivity implements OcrResultReceiver
                 s = "\nError: " + error;
                 break;
             case STATUS_AVERAGE:
-                s = "\n\nAVERAGE TIME: " + resultData.getString(DURATION_RECEIVED) + " seconds\n";
+                s = "\n\nAVERAGE TIME: " + resultData.getString(DURATION_RECEIVED) + " seconds\n"
+                    + "Correct = " + correct + "\nWrong = " + wrong;
                 break;
         }
+        Log.d("RESULT:", s);
         tv.append(s);
         //scrollView.addView(tv);
     }
@@ -235,7 +261,12 @@ public class MainActivity extends AppCompatActivity implements OcrResultReceiver
                     //String rectString = (err.isEmpty() ? "found" : "not found");
                     //OcrUtils.log(1, "OcrHandler", "Rectangle: " + rectString);
                     //bundle.putString(RECTANGLE_RECEIVED, rectString);
-                    OcrTicket result = ocrAnalyzer.getTicket(preproc, OcrOptions.getDefault().priceEditing(OcrOptions.PriceEditing.ALLOW_VOID));
+                    OcrOptions options = OcrOptions.getDefault()
+                            .priceEditing(OcrOptions.PriceEditing.ALLOW_VOID)
+                            .products(OcrOptions.ProductsSearch.DEEP)
+                            .resolution(OcrOptions.Resolution.NORMAL)
+                            .total(OcrOptions.TotalSearch.EXTENDED_SEARCH);
+                    OcrTicket result = ocrAnalyzer.getTicket(preproc, options);
                     OcrUtils.log(1, "OcrHandler", "Detection complete");
                     long endTime = System.nanoTime();
                     double duration = ((double) (endTime - startTime)) / 1000000000;

@@ -5,6 +5,7 @@ import android.graphics.RectF;
 import android.support.annotation.NonNull;
 
 import com.annimon.stream.Stream;
+import com.ing.software.common.Scored;
 import com.ing.software.ocr.OcrObjects.OcrText;
 import com.ing.software.ocr.OcrUtils;
 
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.ing.software.ocr.OcrUtils.IS_DEBUG_ENABLED;
+import static com.ing.software.ocr.OcrUtils.extendRect;
 import static com.ing.software.ocr.OperativeObjects.OcrSchemer.*;
 
 /**
@@ -389,19 +392,19 @@ public class RawImage {
      * @param text text to tag
      * @return text with added tag
      */
-    public static OcrText mapText(OcrText text, RawImage mainImage) {
-        if (mainImage.getIntroRect().contains(text.box()))
+    private OcrText mapText(OcrText text) {
+        if (getIntroRect().contains(text.box()))
             text.addTag(INTRODUCTION_TAG);
-        else if (mainImage.getProductsRect().contains(text.box()))
+        else if (getProductsRect().contains(text.box()))
             text.addTag(PRODUCTS_TAG);
-        else if (mainImage.getPricesRect().contains(text.box()))
+        else if (getPricesRect().contains(text.box()))
             text.addTag(PRICES_TAG);
-        else if (mainImage.getConclusionRect().contains(text.box()))
+        else if (getConclusionRect().contains(text.box()))
             text.addTag(CONCLUSION_TAG);
         else {
-            float productsTop = Math.min(mainImage.getProductsRect().top, mainImage.getPricesRect().top);
-            float productsBottom = Math.max(mainImage.getProductsRect().bottom, mainImage.getPricesRect().bottom);
-            RectF middleRect = new RectF(mainImage.getProductsRect().left, productsTop, mainImage.getPricesRect().right, productsBottom);
+            float productsTop = Math.min(getProductsRect().top, getPricesRect().top);
+            float productsBottom = Math.max(getProductsRect().bottom, getPricesRect().bottom);
+            RectF middleRect = new RectF(getProductsRect().left, productsTop, getPricesRect().right, productsBottom);
             //Check its y coordinate
             float centerY = text.box().centerY();
             if (centerY < productsTop)
@@ -416,5 +419,27 @@ public class RawImage {
             }
         }
         return text;
+    }
+
+    /**
+     * @author Michelon
+     *
+     * Replace texts in rawImage inside passed rect with new texts passed
+     * @param texts new texts to add
+     * @param rect rect containing texts to remove
+     */
+    public void replaceTexts(List<Scored<OcrText>> texts, RectF rect) {
+        int percentHeightReplacement = 5;
+        int percentWidthReplacement = 10;
+        RectF extendedRect = extendRect(rect, percentHeightReplacement, percentWidthReplacement);
+        List<OcrText> newTexts = Stream.of(texts)
+                .map(text -> mapText(text.obj()))
+                .toList();
+        removeText(extendedRect);
+        for (OcrText text : newTexts)
+            addText(text); //can't be added directly to the stream as I'd lose rects configuration in rawImage
+        OcrUtils.log(3, "replaceTexts", "NEW REPLACED TEXTS");
+        if (IS_DEBUG_ENABLED)
+            OcrUtils.listEverything(this);
     }
 }

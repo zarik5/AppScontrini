@@ -75,7 +75,7 @@ public class AmountComparator {
      * @param mainImage source rawImage
      * @return list of bigDecimal and texts of numbers above total
      */
-    private List<Pair<OcrText, BigDecimal>> getAboveTotalPrices(OcrText amountText, RawImage mainImage) {
+    public static List<Pair<OcrText, BigDecimal>> getAboveTotalPrices(OcrText amountText, RawImage mainImage) {
         Collections.sort(mainImage.getPricesTexts());
         return Stream.of(mainImage.getPricesTexts())
                 .filter(price -> price.box().centerY() < amountText.box().centerY())
@@ -93,7 +93,7 @@ public class AmountComparator {
      * @param mainImage source rawImage
      * @return list of bigDecimal of numbers below total
      */
-    private List<BigDecimal> getBelowTotalPrices(OcrText amountText, RawImage mainImage) {
+    public static List<BigDecimal> getBelowTotalPrices(OcrText amountText, RawImage mainImage) {
         Collections.sort(mainImage.getPricesTexts());
         return Stream.of(mainImage.getPricesTexts())
                 .filter(price -> price.box().centerY() > amountText.box().centerY())

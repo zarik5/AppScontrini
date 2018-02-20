@@ -1,22 +1,16 @@
 package com.ing.software.ticketapp;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SizeF;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -24,22 +18,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.ing.software.ocr.ImageProcessor;
 import com.ing.software.ocr.OcrManager;
 import com.ing.software.ocr.OcrOptions;
 import com.ing.software.ocr.OcrTicket;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import database.DataManager;
 import database.MissionEntity;
@@ -103,7 +93,7 @@ public class CheckPhotoActivity extends Activity {
         //OCR initialize
         ocrManager = new OcrManager();
 
-        addOCRSettings();
+        //addOCRSettings();
 
         while (ocrManager.initialize(this) != 0) { // 'this' is the context
             try {
@@ -148,8 +138,46 @@ public class CheckPhotoActivity extends Activity {
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
         Bitmap btm = AppUtilities.fromByteArrayToBitmap(Singleton.getInstance().getTakenPicture());
-
+        /*
+        Glide.with(this)
+                .load(Singleton.getInstance().getTakenPicture())
+                .asBitmap()
+                .transform(new MyTransformation(this, 90))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(checkPhotoView);
+                */
         finalBitmap = Bitmap.createBitmap(btm, 0, 0, btm.getWidth(), btm.getHeight(), matrix, true);
+    }
+
+    private OcrOptions getOcrOptions() {
+        List<SettingsEntity> settingsList = DB.getAllSettings();
+        if (settingsList.isEmpty() || settingsList.get(0) == null)
+            return OcrOptions.getDefault();
+        SettingsEntity setting = settingsList.get(0);
+        OcrOptions options = OcrOptions.getDefault();
+        if (setting.isAutomaticCorrectionAmountOCR())
+            options = options.priceEditing(OcrOptions.PriceEditing.ALLOW_VOID);
+        if (setting.isSearchUpDownOCR())
+            options = options.orientation(OcrOptions.Orientation.ALLOW_UPSIDE_DOWN);
+        switch (setting.getAccuracyOCR()) {
+            case (0) : options = options.resolution(OcrOptions.Resolution.THIRD);
+            case (1) : options = options.resolution(OcrOptions.Resolution.HALF);
+            case (2) : options = options.resolution(OcrOptions.Resolution.NORMAL);
+            default: Log.d("Options Resolution", "Not set");
+        }
+        switch (setting.getCurrencyDefault()) {
+            case ("EUR"):
+                options = options.suggestedCountry(Locale.ITALY);
+                break;
+            case ("USD"):
+                options = options.suggestedCountry(Locale.US);
+                break;
+            case ("GBP"):
+                options = options.suggestedCountry(Locale.UK);
+                break;
+        }
+        return options;
     }
 
     /** Dal Maso
@@ -158,13 +186,13 @@ public class CheckPhotoActivity extends Activity {
     private void startOCRProcess(){
         // OCR asynchronous implementation:
         ImageProcessor imgProc = new ImageProcessor(finalBitmap);
-        ocrManager.getTicket(imgProc, OcrOptions.getDefault(), result -> {
+        ocrManager.getTicket(imgProc, getOcrOptions(), result -> {
             //Thread UI control reservation
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     if(!result.errors.isEmpty()) {
-                        Toast.makeText(getApplicationContext(), result.errors.toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), result.errors.toString().replace("_", " ").replace("[", "").replace("]", ""), Toast.LENGTH_SHORT).show();
                     }
                     if(result.total != null) {
                         checkPrice.setText(result.total.toString());
@@ -298,4 +326,42 @@ public class CheckPhotoActivity extends Activity {
             }
         }
     }
+
+    /*
+    public class MyTransformation extends BitmapTransformation
+
+    {
+        private int mOrientation;
+
+        public MyTransformation(Context context, int orientation){
+        super(context);
+        mOrientation = orientation;
+    }
+
+        @Override
+        protected Bitmap transform (BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight)
+        {
+            int exifOrientationDegrees = getExifOrientationDegrees(mOrientation);
+            return TransformationUtils.rotateImageExif(toTransform, pool, exifOrientationDegrees);
+        }
+
+    private int getExifOrientationDegrees(int orientation) {
+        int exifInt;
+        switch (orientation) {
+            case 90:
+                exifInt = ExifInterface.ORIENTATION_ROTATE_90;
+                break;
+            default:
+                exifInt = ExifInterface.ORIENTATION_NORMAL;
+                break;
+        }
+        return exifInt;
+    }
+
+        @Override
+        public String getId() {
+            return mOrientation + "";
+        }
+    }
+    */
 }

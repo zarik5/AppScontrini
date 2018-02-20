@@ -111,6 +111,9 @@ public class TicketSchemeIT_PCC implements TicketScheme{
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: " + total);
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + normCash);
                 boolean cashPrices = normCash.compareTo(productsSum) == 0;
                 boolean cashAmount = normCash.compareTo(total) == 0;
                 boolean pricesAmount = productsSum.compareTo(total) == 0;
@@ -130,6 +133,8 @@ public class TicketSchemeIT_PCC implements TicketScheme{
                 BigDecimal productsSum = Stream.of(products)
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: " + total);
                 if (productsSum.compareTo(total) == 0) {
                     acceptedList = true;
                     return new Scored<>(TWO_VALUES_AMOUNT, new Pair<>(totalText, total));
@@ -138,6 +143,8 @@ public class TicketSchemeIT_PCC implements TicketScheme{
                 }
             } else if (cash != null && change != null) {
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: " + total);
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + normCash);
                 if (normCash.compareTo(total) == 0) {
                     return new Scored<>(TWO_VALUES_AMOUNT, new Pair<>(totalText, total));
                 } else {
@@ -153,6 +160,9 @@ public class TicketSchemeIT_PCC implements TicketScheme{
                         .map(product -> product.second)
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 BigDecimal normCash = cash.subtract(change);
+                OcrUtils.log(3, "TicketScheme_" + tag, "productsSum is: " + productsSum);
+                OcrUtils.log(3, "TicketScheme_" + tag, "total is: null");
+                OcrUtils.log(3, "TicketScheme_" + tag, "cash(n) is: " + normCash);
                 if (normCash.compareTo(productsSum) == 0) {
                     acceptedList = true;
                     return new Scored<>(TWO_VALUES, new Pair<>(totalText, normCash));

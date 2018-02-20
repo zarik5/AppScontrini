@@ -1,29 +1,17 @@
 package com.ing.software.ticketapp;
 
-import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getkeepsafe.taptargetview.TapTarget;
-import com.getkeepsafe.taptargetview.TapTargetView;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
 import database.DataManager;
-import database.MissionEntity;
 import database.PersonEntity;
 
 public class AddNewPerson extends AppCompatActivity {
