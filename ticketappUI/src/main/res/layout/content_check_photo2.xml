@@ -1,52 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:clickable="true"
-    android:focusableInTouchMode="true"
-    android:layout_height="match_parent"
-    tools:context="com.ing.software.ticketapp.CheckPhotoActivity">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/appbar"
-        android:elevation="15dp"
-        android:gravity="top"
-        android:orientation="horizontal"
-        android:id="@+id/linearLayout">
-
-        <Button
-            android:id="@+id/btnCheck_retry"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:text="ANNULLA"
-            android:textColor="@color/cardview_light_background" />
-
-        <Button
-            android:id="@+id/btnCheck_allow"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:text="SALVA"
-            android:textColor="@color/cardview_light_background" />
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/checkPhoto_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="115dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        app:srcCompat="@drawable/appbar" />
+    android:layout_height="wrap_content"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.ing.software.ticketapp.CheckPhotoActivity2"
+    tools:showIn="@layout/activity_check_photo2">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -65,7 +25,7 @@
             android:text="@string/billTitle"
             android:textAlignment="center"
             android:textColor="#fff"
-            android:textSize="15dp" />
+            android:textSize="20dp" />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/input_layout_checkName"
@@ -73,6 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
             android:textColorHint="#ddd"
             android:theme="@style/TextLabelCustom">
 
@@ -95,7 +56,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="10dp"
@@ -127,31 +88,10 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/currency_btn"
-                android:layout_width="60dp"
-                android:layout_height="match_parent"
-                android:layout_marginRight="14dp"
-                android:layout_marginTop="10dp"
-                android:background="#33FFFFFF"
-                android:text="EUR"
-                android:textColor="@color/cardview_light_background" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="14dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/input_layout_numPeople"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textColorHint="#ddd"
                 android:theme="@style/TextLabelCustom">
@@ -173,13 +113,23 @@
                     android:textSize="22dp" />
 
             </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:layout_weight="1"
                 android:text="Rimborsare"
                 android:textColor="#FFF"
@@ -189,7 +139,6 @@
                 android:id="@+id/check_Refundable"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:layout_weight="0"
                 android:checked="true"
                 android:scaleX="0.7"
@@ -203,15 +152,4 @@
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBarOCR"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
-        android:indeterminate="true"
-        android:visibility="invisible" />
-
-</RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

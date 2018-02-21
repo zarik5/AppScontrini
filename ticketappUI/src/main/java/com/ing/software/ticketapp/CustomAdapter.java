@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.daimajia.swipe.SwipeLayout;
 
 import java.io.File;
 import java.math.BigDecimal;

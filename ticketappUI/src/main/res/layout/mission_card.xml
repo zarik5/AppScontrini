@@ -124,6 +124,19 @@
 
                     </LinearLayout>
 
+                    <ImageButton
+                        android:id="@+id/mission_swipe_btn"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@android:color/transparent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.26"
+                        app:srcCompat="@drawable/ic_action_more_vert_light" />
+
                 </android.support.constraint.ConstraintLayout>
             </RelativeLayout>
         </com.daimajia.swipe.SwipeLayout>

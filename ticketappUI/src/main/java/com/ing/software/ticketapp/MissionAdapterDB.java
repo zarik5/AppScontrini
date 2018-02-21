@@ -29,12 +29,15 @@ import database.TicketEntity;
  * Created by nicoladalmaso on 30/11/17.
  */
 
-public class MissionAdapterDB extends ArrayAdapter<MissionEntity> {
+public class MissionAdapterDB extends ArrayAdapter<MissionEntity> implements SwipeLayout.SwipeListener {
 
     Context context;
     String path = "";
     List<MissionEntity> missions;
     DataManager DB;
+
+    //swipeLayout does not have and internal swipe state, I need to update this variable with swipe events
+    boolean swipeOpen = false;
 
     public MissionAdapterDB(Context context, int textViewResourceId,
                           List<MissionEntity> objects) {
@@ -67,6 +70,16 @@ public class MissionAdapterDB extends ArrayAdapter<MissionEntity> {
         ImageButton btnUpdate = (ImageButton)convertView.findViewById(R.id.editMission);
         RelativeLayout toTickets = (RelativeLayout) convertView.findViewById(R.id.missionClick);
 
+        ImageButton swipeButton = convertView.findViewById(R.id.mission_swipe_btn);
+        card.addSwipeListener(this);
+        swipeButton.setOnClickListener(v -> {
+            if (swipeOpen) {
+                card.close();
+            } else {
+                card.open();
+            }
+        });
+
         MissionEntity mission = getItem(position);
 
         title.setText(mission.getName());
@@ -85,13 +98,18 @@ public class MissionAdapterDB extends ArrayAdapter<MissionEntity> {
             total.setTextColor(textColor);
             location.setTextColor(textColor);
             title.setTextColor(textColor);
+            swipeButton.setImageDrawable(convertView.getResources().getDrawable(R.drawable.ic_action_more_vert_dark));
         }
 
         toTickets.setOnClickListener(new View.OnClickListener(){
             public void onClick (View v){
-                Intent startTicketsView = new Intent(context, BillActivity.class);
-                Singleton.getInstance().setMissionID((int)mission.getID());
-                ((MissionsTabbed)context).startActivityForResult(startTicketsView, 1);
+                if (swipeOpen) {
+                    card.close();
+                } else {
+                    Intent startTicketsView = new Intent(context, BillActivity.class);
+                    Singleton.getInstance().setMissionID((int) mission.getID());
+                    ((MissionsTabbed) context).startActivityForResult(startTicketsView, 1);
+                }
             }
         });
 
@@ -146,5 +164,35 @@ public class MissionAdapterDB extends ArrayAdapter<MissionEntity> {
         AlertDialog alert = toast.show();
         Button nbutton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
         nbutton.setTextColor(Color.parseColor("#2196F3"));
+    }
+
+    @Override
+    public void onStartOpen(SwipeLayout layout) {
+
+    }
+
+    @Override
+    public void onOpen(SwipeLayout layout) {
+        swipeOpen = true;
+    }
+
+    @Override
+    public void onStartClose(SwipeLayout layout) {
+
+    }
+
+    @Override
+    public void onClose(SwipeLayout layout) {
+        swipeOpen = false;
+    }
+
+    @Override
+    public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+
+    }
+
+    @Override
+    public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+
     }
 }

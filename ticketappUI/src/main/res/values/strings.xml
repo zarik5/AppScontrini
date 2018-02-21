@@ -88,6 +88,13 @@
     <string name="toast_multiPoint_noNumber">Totale non valido</string>
     <string name="text_ExportMissionTo">Dove vuoi esportare la missione?</string>
     <string name="text_Export">Formato esportazione</string>
+    <string name="title_activity_check_photo">CheckPhotoActivity</string>
+
+    <string-array name="currencies">
+        <item>EUR</item>
+        <item>GBP</item>
+        <item>USD</item>
+    </string-array>
 
 </resources>
 

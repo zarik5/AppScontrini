@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.daimajia.swipe.SwipeLayout;
 
 import java.util.List;
 
@@ -29,12 +30,14 @@ import database.TicketEntity;
  * Created by nicoladalmaso on 29/12/17.
  */
 
-public class PeopleAdapter extends ArrayAdapter<PersonEntity> {
+public class PeopleAdapter extends ArrayAdapter<PersonEntity> implements SwipeLayout.SwipeListener {
 
     Context context;
     String path = "";
     List<PersonEntity> persons;
     DataManager DB;
+
+    boolean swipeOpen = false;
 
     public PeopleAdapter(Context context, int textViewResourceId,
                           List<PersonEntity> objects) {
@@ -68,6 +71,17 @@ public class PeopleAdapter extends ArrayAdapter<PersonEntity> {
         TextView openMissions=(TextView) convertView.findViewById(R.id.personOpenMissions);
         CardView personCard = (CardView) convertView.findViewById(R.id.personCard);
         PersonEntity person = getItem(position);
+        SwipeLayout swipeLayout = convertView.findViewById(R.id.swipePerson);
+
+        swipeLayout.addSwipeListener(this);
+
+        convertView.findViewById(R.id.person_swipe_btn).setOnClickListener(v -> {
+            if (swipeOpen) {
+                swipeLayout.close();
+            } else {
+                swipeLayout.open();
+            }
+        });
 
         List<MissionEntity> missions = DB.getMissionsForPerson(person.getID());
         int openMissionCounter = 0;
@@ -100,9 +114,13 @@ public class PeopleAdapter extends ArrayAdapter<PersonEntity> {
 
         toMissions.setOnClickListener(new View.OnClickListener(){
             public void onClick (View v){
-                Intent missionTab = new Intent(context, MissionsTabbed.class);
-                Singleton.getInstance().setPersonID((int)person.getID());
-                ((MainActivity)context).startActivityForResult(missionTab, 1);
+                if (swipeOpen) {
+                    swipeLayout.close();
+                } else {
+                    Intent missionTab = new Intent(context, MissionsTabbed.class);
+                    Singleton.getInstance().setPersonID((int) person.getID());
+                    ((MainActivity) context).startActivityForResult(missionTab, 1);
+                }
             }
         });
 
@@ -160,5 +178,35 @@ public class PeopleAdapter extends ArrayAdapter<PersonEntity> {
         AlertDialog alert = toast.show();
         Button nbutton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
         nbutton.setTextColor(Color.parseColor("#2196F3"));
+    }
+
+    @Override
+    public void onStartOpen(SwipeLayout layout) {
+
+    }
+
+    @Override
+    public void onOpen(SwipeLayout layout) {
+        swipeOpen = true;
+    }
+
+    @Override
+    public void onStartClose(SwipeLayout layout) {
+
+    }
+
+    @Override
+    public void onClose(SwipeLayout layout) {
+        swipeOpen = false;
+    }
+
+    @Override
+    public void onUpdate(SwipeLayout layout, int leftOffset, int topOffset) {
+
+    }
+
+    @Override
+    public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
+
     }
 }

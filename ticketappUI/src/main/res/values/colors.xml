@@ -7,6 +7,6 @@
     <color name="colorFAB2">#E040FB</color>
     <color name="white">#FFFFFF</color>
 
-    <color name="black_overlay">#66000000</color>
+    <color name="black_overlay">#64000000</color>
     <color name="black">#000000</color>
 </resources>
