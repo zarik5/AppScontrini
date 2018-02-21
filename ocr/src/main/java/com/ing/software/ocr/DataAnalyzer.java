@@ -365,7 +365,7 @@ public class DataAnalyzer {
      * @param texts list of scored target texts (prices). Not null.
      * @return text containing amount price and its decoded value
      */
-    static Pair<OcrText, BigDecimal>  getMatchingAmount(@NonNull List<Scored<OcrText>> texts, boolean advanced) {
+    static Pair<OcrText, BigDecimal> getMatchingAmount(@NonNull List<Scored<OcrText>> texts, boolean advanced) {
         List<Pair<OcrText, BigDecimal>> prices = findAllPricesRegex(Stream.of(texts).map(Scored::obj).toList(), advanced);
         if (prices.size() > 0)
             return prices.get(0);

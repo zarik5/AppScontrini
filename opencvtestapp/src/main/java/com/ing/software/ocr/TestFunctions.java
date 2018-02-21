@@ -5,6 +5,7 @@ import android.util.Pair;
 import android.util.SizeF;
 
 import com.annimon.stream.Stream;
+import com.ing.software.common.CommonUtils;
 import com.ing.software.common.Scored;
 import com.ing.software.ocr.OcrObjects.OcrText;
 

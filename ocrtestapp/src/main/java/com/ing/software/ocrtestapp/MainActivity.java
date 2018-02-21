@@ -14,6 +14,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,12 +33,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
 import static com.ing.software.ocrtestapp.StatusVars.*;
@@ -142,13 +146,13 @@ public class MainActivity extends AppCompatActivity implements OcrResultReceiver
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         //ScrollView scrollView = (ScrollView) findViewById(R.id.scroller);
-        TextView tv = (TextView) findViewById(R.id.scrollerText);;
-        String s = "";
+        TextView tv = (TextView) findViewById(R.id.scrollerText);
+        List<Pair<String, Boolean>> strings = new ArrayList<>(); // boolean -> true if log error
         switch (resultCode) {
             case STATUS_RUNNING:
                 //Toast.makeText(this, "Starting img: " + resultData.getString(IMAGE_RECEIVED), Toast.LENGTH_LONG).show();
                 tv.append("\n");
-                s = "\nStarting img: " + resultData.getString(IMAGE_RECEIVED);
+                strings.add(new Pair<>("\nStarting img: " + resultData.getString(IMAGE_RECEIVED) + "--------------------------", false));
                 break;
             case STATUS_FINISHED:
                 BigDecimal price = null;
@@ -168,23 +172,29 @@ public class MainActivity extends AppCompatActivity implements OcrResultReceiver
                         //BAh
                     }
                 }
-                s = "\nAmount is: " + resultData.getString(AMOUNT_RECEIVED) +
-                        "\nResult is: " + result +
-                        "\nDate is: " + resultData.getString(DATE_RECEIVED);
+                strings.add(new Pair<>("\nAmount is: " + resultData.getString(AMOUNT_RECEIVED), false));
+                strings.add(new Pair<>("\nResult is: " + result, !result.equals("SUCCESS")));
+                strings.add(new Pair<>("\nDate is: " + resultData.getString(DATE_RECEIVED), false));
                 break;
             case STATUS_ERROR:
                 /* Handle the error */
                 String error = resultData.getString(ERROR_RECEIVED);
                 //Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
-                s = "\nError: " + error;
+                strings.add(new Pair<>("\nError: " + error, false));
                 break;
             case STATUS_AVERAGE:
-                s = "\n\nAVERAGE TIME: " + resultData.getString(DURATION_RECEIVED) + " seconds\n"
-                    + "Correct = " + correct + "\nWrong = " + wrong;
+                strings.add(new Pair<>("\n\nAVERAGE TIME: " + resultData.getString(DURATION_RECEIVED) + " seconds\n"
+                    + "Correct = " + correct + "\nWrong = " + wrong, false));
                 break;
         }
-        Log.d("RESULT:", s);
-        tv.append(s);
+        for (Pair<String, Boolean> pair : strings) {
+            if (pair.second) {
+                Log.e("RESULT:", pair.first);
+            } else {
+                Log.d("RESULT:", pair.first);
+            }
+            tv.append(pair.first);
+        }
         //scrollView.addView(tv);
     }
 
@@ -244,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements OcrResultReceiver
             int validBitmaps = 0;
             List<File> listFile = loadImage(MainActivity.testFolder);
             for (File aFile : listFile) {
+                String name = aFile.getName();
                 Bitmap testBmp = getBitmapFromFile(aFile);
                 //test = OcrAnalyzer.getCroppedPhoto(test, this);
                 final long startTime = System.nanoTime();
@@ -262,10 +273,10 @@ public class MainActivity extends AppCompatActivity implements OcrResultReceiver
                     //OcrUtils.log(1, "OcrHandler", "Rectangle: " + rectString);
                     //bundle.putString(RECTANGLE_RECEIVED, rectString);
                     OcrOptions options = OcrOptions.getDefault()
-                            .priceEditing(OcrOptions.PriceEditing.ALLOW_VOID)
-                            .products(OcrOptions.ProductsSearch.DEEP)
-                            .resolution(OcrOptions.Resolution.NORMAL)
-                            .total(OcrOptions.TotalSearch.EXTENDED_SEARCH);
+                            .priceEditing(OcrOptions.PriceEditing.ALLOW_STRICT)
+                            .products(OcrOptions.ProductsSearch.SKIP)
+                            .resolution(OcrOptions.Resolution.THIRD)
+                            .total(OcrOptions.TotalSearch.DEEP);
                     OcrTicket result = ocrAnalyzer.getTicket(preproc, options);
                     OcrUtils.log(1, "OcrHandler", "Detection complete");
                     long endTime = System.nanoTime();

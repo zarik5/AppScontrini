@@ -145,7 +145,7 @@ public class OcrManager {
         OcrText amountPriceText = null; //text containing price for total
         Scored<TicketScheme> bestTicketScheme = null; //ticket with highest score for amount (contains list of prices etc.)
         Scored<TicketScheme> bestRestoredTicketScheme = null;
-        boolean editTotal = options.priceEditing.ordinal() >= PriceEditing.ALLOW_STRICT.ordinal();
+        boolean editTotal = options.priceEditing.ordinal() >= PriceEditing.ALLOW_VOID.ordinal();
         if (options.totalSearch != TotalSearch.SKIP) {
             /*
             Steps:
@@ -210,7 +210,8 @@ public class OcrManager {
                         //set target texts (prices) to source text (containing total string)
                         amountList.get(i).setAmountTargetTexts(amountPrices); //5
                         AmountComparator amountComparator;
-                        Pair<OcrText, BigDecimal> amountT = DataAnalyzer.getMatchingAmount(amountList.get(i).getTargetTexts(), false); //6
+                        boolean advanced = options.priceEditing.ordinal() >= PriceEditing.ALLOW_STRICT.ordinal();
+                        Pair<OcrText, BigDecimal> amountT = DataAnalyzer.getMatchingAmount(amountList.get(i).getTargetTexts(), advanced); //6
                         if (amountT != null && newTicket.total == null) {
                             newTicket.total = amountT.second; //BigDecimal containing total price
                             amountPriceText = amountT.first; //Text containing total price
@@ -246,7 +247,7 @@ public class OcrManager {
                                 OcrUtils.log(2, "MANAGER.Comparator", "Best amount is: " + newTicket.total.setScale(2, RoundingMode.HALF_UP));
                             }
                         }
-                        if (editTotal) {
+                        if (editTotal && newTicket.total == null) {
                             //use different method to decode a price, resulting price may be modified
                             Pair<OcrText, BigDecimal> restoredAmountT = DataAnalyzer.getRestoredAmount(amountList.get(i).getTargetTexts()); //7
                             if (restoredAmountT != null && bestRestoredTicketScheme == null) { //Do not find a new restored amount if one is already saved
@@ -305,7 +306,7 @@ public class OcrManager {
                         }
                     }
                 }
-                if (editTotal) {
+                if (editTotal && newTicket.total == null) {
                     if (bestRestoredTicketScheme != null) {
                         //if (bestRestoredTicketScheme.getScore() > 1 && (bestTicketScheme == null || bestRestoredTicketScheme.getScore() > bestTicketScheme.getScore())) { //This '1' will be changed later. Accept restored only if there is at least 1 hit
                         if (bestTicketScheme == null || bestRestoredTicketScheme.getScore() > bestTicketScheme.getScore()) {
