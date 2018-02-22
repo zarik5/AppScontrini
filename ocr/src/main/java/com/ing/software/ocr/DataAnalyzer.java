@@ -329,8 +329,9 @@ public class DataAnalyzer {
                     .filter(s -> s.getScore() > 0)
                     .toList();
             if (scoredLocales.size() > 0) {
-                matches.add(new Scored<>(scoredLocales.get(0).getScore(),
-                        new Pair<>(text, scoredLocales.get(0).obj())));
+                matches.addAll(Stream.of(scoredLocales)
+                        .map(scored -> new Scored<>(scored.getScore(), new Pair<>(text, scored.obj())))
+                        .toList());
             }
         }
         return matches;

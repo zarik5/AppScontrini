@@ -55,16 +55,16 @@ public class EditMission extends AppCompatActivity {
         setTitle(context.getString(R.string.title_EditMission));
 
         DB = new DataManager(this.getApplicationContext());
-        txtMissionName=(TextView)findViewById(R.id.input_missionEditName);
-        txtMissionLocation=(TextView)findViewById(R.id.input_missionEditLocation);
-        txtMissionStart=(TextView)findViewById(R.id.input_missionEditStart);
-        txtMissionEnd=(TextView)findViewById(R.id.input_missionEditFinish);
-        chkIsClosed=(CheckBox)findViewById(R.id.check_isRepaid);
-        missionID = Singleton.getInstance().getMissionID();
+        txtMissionName = findViewById(R.id.input_missionEditName);
+        txtMissionLocation = findViewById(R.id.input_missionEditLocation);
+        txtMissionStart = findViewById(R.id.input_missionEditStart);
+        txtMissionEnd = findViewById(R.id.input_missionEditFinish);
+        chkIsClosed = findViewById(R.id.check_isRepaid);
+        missionID = getIntent().getExtras().getLong(IntentCodes.INTENT_MISSION_ID);
         thisMission = DB.getMission(missionID);
 
-        LinearLayout bntMissionStart = (LinearLayout)findViewById(R.id.button_missionEditStart);
-        LinearLayout bntMissionFinish = (LinearLayout)findViewById(R.id.button_missionEditFinish);
+        LinearLayout bntMissionStart = findViewById(R.id.button_missionEditStart);
+        LinearLayout bntMissionFinish = findViewById(R.id.button_missionEditFinish);
         //lazzarin clean startDate on Singleton
         Singleton.getInstance().setStartDate(thisMission.getStartDate());
         bntMissionStart.setOnClickListener(new View.OnClickListener() {

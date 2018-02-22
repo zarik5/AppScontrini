@@ -27,8 +27,7 @@ import database.TicketEntity;
 public class EditTicket extends AppCompatActivity {
 
     public DataManager DB;
-    int ticketID;
-    int missionID;
+    long ticketID;
     Context context;
     TicketEntity thisTicket;
     MissionEntity thisMission;
@@ -51,19 +50,15 @@ public class EditTicket extends AppCompatActivity {
         setContentView(R.layout.activity_edit_ticket);
 
         DB = new DataManager(this.getApplicationContext());
-        ticketID = Singleton.getInstance().getTicketID();
-        missionID = Singleton.getInstance().getMissionID();
+        ticketID = getIntent().getExtras().getLong(IntentCodes.INTENT_TICKET_ID);
         thisTicket = DB.getTicket(ticketID);
-        thisMission = DB.getMission(missionID);
-        TextView editDate=(TextView)findViewById(R.id.input_ticketDateMod);
-        LinearLayout bntMissionStart = (LinearLayout)findViewById(R.id.buttonEditTicketDate);
-        bntMissionStart.setOnClickListener(new View.OnClickListener() {
-            //lazzarin
-            public void onClick(View v) {
-                Singleton.getInstance().setStartFlag(2);
-                DialogFragment newFragment = new DatePickerFragment().newInstance(editDate);
-                newFragment.show(getFragmentManager(), "startDatePicker");
-            }
+        thisMission = DB.getMission(thisTicket.getMissionID());
+        TextView editDate = findViewById(R.id.input_ticketDateMod);
+        LinearLayout bntMissionStart = findViewById(R.id.buttonEditTicketDate);
+        bntMissionStart.setOnClickListener(v -> {
+            Singleton.getInstance().setStartFlag(2);
+            DialogFragment newFragment = new DatePickerFragment().newInstance(editDate);
+            newFragment.show(getFragmentManager(), "startDatePicker");
         });
 
 
@@ -103,7 +98,7 @@ public class EditTicket extends AppCompatActivity {
                  */
                 SimpleDateFormat dateformat = new SimpleDateFormat("dd/MM/yyyy");
                 try {
-                    MissionEntity current = DB.getMission(missionID);
+                    MissionEntity current = DB.getMission(thisTicket.getMissionID());
                     String  start=dateformat.format(current.getStartDate());
 
                     String finish=dateformat.format(current.getEndDate());

@@ -21,6 +21,7 @@ import java.util.List;
 
 import database.DataManager;
 import database.PersonEntity;
+import database.SettingsEntity;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -138,10 +139,16 @@ public class MainActivity extends AppCompatActivity {
      * Initialize the activity
      */
     private void initialize(){
+        DB = new DataManager(this.getApplicationContext());
+        if (DB.getAllSettings().size() == 0) {
+            //todo put this settings elsewhere, avoid hardcoding
+            DB.addSettings(new SettingsEntity(1, false, false, "EUR"));
+        }
+
+
         myView = findViewById(R.id.circularAnimation);
         noPeople = (TextView)findViewById(R.id.noPeople);
         listView = (ListView)findViewById(R.id.listPeople);
-        DB = new DataManager(this.getApplicationContext());
         FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab_addPerson);
         fab.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

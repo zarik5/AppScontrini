@@ -21,7 +21,7 @@ public class MissionsClosed extends Fragment {
     public DataManager DB;
     int personID;
     PersonEntity thisPerson;
-    public List<MissionEntity> listMission = new LinkedList<MissionEntity>();
+    public List<MissionEntity> listMission = new LinkedList<>();
     View rootView;
     MissionAdapterDB adapter;
     ListView listView;
@@ -56,21 +56,19 @@ public class MissionsClosed extends Fragment {
     public void printAllMissions(){
         listMission.clear();
         List<MissionEntity> missions = DB.getMissionsForPerson(personID);
-        int count = 0;
         for (int i = 0; i < missions.size(); i++)
         {
             if(missions.get(i).isClosed()) {
-                count++;
                 listMission.add(missions.get(i));
             }
         }
         addToListDB();
-        if(count == 0){
+
+        if(missions.size() == 0)
             noMissions.setVisibility(View.VISIBLE);
-        }
-        else{
+        else
             noMissions.setVisibility(View.INVISIBLE);
-        }
+
     }
 
     /** Dal Maso

@@ -700,6 +700,8 @@ public class ImageProcessor {
     private MatOfPoint2f corners; // normalized in [0, 1]^2 space
     private boolean quickCorners;
 
+    boolean outOfFocus = false;
+
 
     //PACKAGE PRIVATE:
 
@@ -905,8 +907,10 @@ public class ImageProcessor {
                 errors.add(IPError.UNDEREXPOSED);
             else if (winner.exposure > EXPOSURE_UPPER_THRESH)
                 errors.add(IPError.OVEREXPOSED);
-            if (winner.focus < FOCUS_THRESH)
+            if (winner.focus < FOCUS_THRESH) {
                 errors.add(IPError.OUT_OF_FOCUS);
+                outOfFocus = true;
+            }
             if (winner.backgroundContrast < BG_CONTRAST_THRESH)
                 errors.add(IPError.POOR_BG_CONTRAST);
         } else {
@@ -980,6 +984,12 @@ public class ImageProcessor {
      */
     public void undistort(double marginMul, int shortSide, @NonNull Consumer<Bitmap> callback) {
         new Thread(() -> callback.accept(undistort(marginMul, shortSide))).start();
+    }
+
+    synchronized public void rotateImage(int code) {
+        //todo use angle90step as parameter
+        transpose(srcImg, srcImg);
+        flip(srcImg, srcImg, code);
     }
 
     /**

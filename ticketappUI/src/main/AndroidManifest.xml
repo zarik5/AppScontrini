@@ -84,12 +84,12 @@
         </activity>
         <activity
             android:name=".CameraActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+            android:screenOrientation="portrait"/>
+            <!--android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />-->
         <activity
             android:name=".CheckPhotoActivity"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+            android:screenOrientation="portrait"/>
+            <!--android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />-->
         <activity
             android:name=".ApplicationSettings"
             android:parentActivityName=".MainActivity"

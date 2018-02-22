@@ -99,7 +99,8 @@ public class OcrManager {
         long endTime;
         if (IS_DEBUG_ENABLED)
             startTime = System.nanoTime();
-        Bitmap frame = procCopy.undistortForOCR(options.getResolutionMultiplier());
+        //when an image is out of foucs, ocr perform better with image with lower resolution.
+        Bitmap frame = procCopy.undistortForOCR(options.getResolutionMultiplier() * (procCopy.outOfFocus ? 1./2. : 1.));
         if (frame == null) {
             ticket.errors.add(OcrError.INVALID_PROCESSOR);
             return;
@@ -210,8 +211,14 @@ public class OcrManager {
                         //set target texts (prices) to source text (containing total string)
                         amountList.get(i).setAmountTargetTexts(amountPrices); //5
                         AmountComparator amountComparator;
-                        boolean advanced = options.priceEditing.ordinal() >= PriceEditing.ALLOW_STRICT.ordinal();
-                        Pair<OcrText, BigDecimal> amountT = DataAnalyzer.getMatchingAmount(amountList.get(i).getTargetTexts(), advanced); //6
+                        Pair<OcrText, BigDecimal> amountT = DataAnalyzer.getMatchingAmount(amountList.get(i).getTargetTexts(), false); //6
+                        if (options.priceEditing.ordinal() >= PriceEditing.ALLOW_STRICT.ordinal()) {
+                            Pair<OcrText, BigDecimal> amountCorrected = DataAnalyzer.getMatchingAmount(amountList.get(i).getTargetTexts(), true); //6
+                            if (amountT.second != amountCorrected.second) {
+                                amountT = amountCorrected;
+                                newTicket.errors.add(OcrError.TOTAL_EDITED);
+                            }
+                        }
                         if (amountT != null && newTicket.total == null) {
                             newTicket.total = amountT.second; //BigDecimal containing total price
                             amountPriceText = amountT.first; //Text containing total price
@@ -362,9 +369,9 @@ public class OcrManager {
         //NB: this is a fallback, a language could be associated to multiple countries, only one is chosen.
         if (country == null && languageScore > MIN_LANGUAGE_SCORE) {
             country = LANGUAGE_TO_COUNTRY.get(language);
-            //update ticket currency
-            ticket.currency = Currency.getInstance(country);
         }
+        //update ticket currency
+        ticket.currency = Currency.getInstance(country);
 
         if (IS_DEBUG_ENABLED) {
             endTime = System.nanoTime();

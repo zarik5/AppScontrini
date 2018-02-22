@@ -106,18 +106,15 @@ public class CustomAdapter extends ArrayAdapter<TicketEntity> {
         //Dal Maso
         convertView.setOnClickListener(new View.OnClickListener(){
             public void onClick (View v){
-                ticketID = Integer.parseInt(v.getTag().toString());
+                long ticketID = Integer.parseInt(v.getTag().toString());
                 for(int i = 0; i < t.size(); i++){
                     if(t.get(i).getID() == ticketID){
                         TicketEntity thisTicket = t.get(i);
                         Intent startImageView = new Intent(context, BillViewer.class);
+                        startImageView.putExtra(IntentCodes.INTENT_TICKET_ID,ticketID);
                         File photo = new File(thisTicket.getFileUri().toString().substring(7));
-
-                        //Put data to next activity
-                        Singleton.getInstance().setTicketID(ticketID);
-
                         //Start new activity
-                        ((BillActivity)context).startActivityForResult(startImageView, 4);
+                        context.startActivity(startImageView);
                         return;
                     }
                 }

@@ -33,27 +33,15 @@ public class ApplicationSettings extends AppCompatActivity {
      */
     private void initializeComponents(){
         DB = new DataManager(this.getApplicationContext());
-        thisSettings = new SettingsEntity(2, false, false, "EUR");
+        thisSettings = DB.getAllSettings().get(0);
 
         quality_group = (RadioRealButtonGroup)findViewById(R.id.quality_group);
         total_group = (RadioRealButtonGroup)findViewById(R.id.total_group);
         reverse_group = (RadioRealButtonGroup)findViewById(R.id.reverse_group);
         currency_group = (RadioRealButtonGroup)findViewById(R.id.currency_group);
 
-        if(DB.getAllSettings().size() != 0) {
-            thisSettings = DB.getAllSettings().get(0);
-        }
-        else{
-            long settID = DB.addSettings(thisSettings);
-            thisSettings = DB.getAllSettings().get(0);
-        }
-
         FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                setThisSettings();
-            }
-        });
+        fab.setOnClickListener(v -> setThisSettings());
     }
 
     /** Dal Maso

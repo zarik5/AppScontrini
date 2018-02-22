@@ -51,20 +51,20 @@ public class BillActivity extends AppCompatActivity {
     public List<TicketEntity> list = new LinkedList<TicketEntity>();
     public Uri photoURI;
     public boolean isFabOpen = false;
-    String tempPhotoPath;
-    Integer missionID;
     MissionEntity thisMission;
     Context context;
     String root;
     public DataManager DB;
     OcrManager ocrManager;
     CustomAdapter adapter;
-    Camera mCamera;
     ListView listView;
     ExportManager manager;
     TextView title;
 
     static final int REQUEST_TAKE_PHOTO = 1;
+    static final int PICK_PHOTO_FOR_AVATAR = 2;
+    static final int TICKET_MOD = 4;
+    static final int MISSION_MOD = 5;
 
     int textSize = 23;
     int paddingLeft = 10;
@@ -77,21 +77,25 @@ public class BillActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bill);
 
-        root = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString();
-        DB = new DataManager(this.getApplicationContext());
+        try {
+            root = getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString();
+        } catch (NullPointerException e) {
+            Toast.makeText(context, "Storage Error", Toast.LENGTH_LONG).show();
+        }
+
         context = this.getApplicationContext();
-        PersonEntity thisPerson = DB.getPerson(Singleton.getInstance().getPersonID());
+        DB = new DataManager(context);
 
-
-        missionID = Singleton.getInstance().getMissionID();
+        long missionID = getIntent().getExtras().getLong(IntentCodes.INTENT_MISSION_ID);
         thisMission = DB.getMission(missionID);
         //lazzarin
         Singleton.getInstance().setStartDate(thisMission.getStartDate());
         Singleton.getInstance().setEndDate(thisMission.getEndDate());
+		PersonEntity person = DB.getPerson(thisMission.getPersonID());
 
         ActionBar ab = getSupportActionBar();
         ab.setTitle(thisMission.getName());
-        ab.setSubtitle(getResources().getString(R.string.missionOf)+" "+thisPerson.getName()+" "+thisPerson.getLastName());
+        ab.setSubtitle(getResources().getString(R.string.missionOf)+" "+person.getName()+" "+person.getLastName());
 
         ocrManager = new OcrManager();
         while (ocrManager.initialize(this) != 0) { // 'this' is the context
@@ -143,7 +147,7 @@ public class BillActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int which, long l) {
                         try{
-                            ExportedFile exported = manager.exportMission(missionID,formats.get(which));
+                            ExportedFile exported = manager.exportMission(thisMission.getID(),formats.get(which));
                             Uri toExport = Uri.fromFile(exported.file);
                             Intent shareIntent = new Intent();
                             shareIntent.setAction(Intent.ACTION_SEND);
@@ -213,17 +217,12 @@ public class BillActivity extends AppCompatActivity {
                 1);
         listView = (ListView)findViewById(R.id.list1);
         printAllTickets();
-        fab = (FloatingActionButton)findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.fab_close);
         rotate_forward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_forward);
         rotate_backward = AnimationUtils.loadAnimation(getApplicationContext(),R.anim.rotate_backward);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                takePhotoIntent();
-            }
-        });
+        fab.setOnClickListener(v -> takePhotoIntent());
 
         if(thisMission.isClosed()) {
             fab.setVisibility(View.INVISIBLE);
@@ -241,7 +240,7 @@ public class BillActivity extends AppCompatActivity {
      * Add new ticket to the list
      */
     public void addToList(){
-        adapter = new CustomAdapter(this, R.layout.cardview, list, missionID, DB);
+        adapter = new CustomAdapter(this, R.layout.cardview, list, (int)thisMission.getID(), DB);
         listView.setAdapter(adapter);
     }
 
@@ -251,8 +250,8 @@ public class BillActivity extends AppCompatActivity {
      */
     private void takePhotoIntent() {
         if(checkCameraHardware(context)){
-            mCamera = getCameraInstance();
             Intent cameraActivity = new Intent(context, CameraActivity.class);
+            cameraActivity.putExtra(IntentCodes.INTENT_MISSION_ID,thisMission.getID());
             startActivityForResult(cameraActivity, REQUEST_TAKE_PHOTO);
         }
     }
@@ -315,8 +314,7 @@ public class BillActivity extends AppCompatActivity {
      */
     public void printAllTickets(){
         list.clear();
-        List<TicketEntity> ticketList = DB.getTicketsForMission(missionID);
-        TicketEntity t;
+        List<TicketEntity> ticketList = DB.getTicketsForMission(thisMission.getID());
         int count = 0;
         for(int i = 0; i < ticketList.size(); i++){
             list.add(ticketList.get(i));
@@ -324,7 +322,7 @@ public class BillActivity extends AppCompatActivity {
         }
         addToList();
         //If there aren't tickets show message
-        TextView noBills = (TextView)findViewById(R.id.noBills);
+        TextView noBills = findViewById(R.id.noBills);
         String noBillsError=getResources().getString(R.string.noBills);
         if(!thisMission.isClosed())
             noBillsError+=getResources().getString(R.string.noBillsOpen);
@@ -354,6 +352,7 @@ public class BillActivity extends AppCompatActivity {
      * Method that is run when the activity is resumed.
      * it hides the button for adding tickets if the mission is closed, else it shows it.
      */
+    @Override
     public void onResume(){
         super.onResume();
         if(thisMission.isClosed()) {

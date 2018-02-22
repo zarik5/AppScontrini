@@ -38,13 +38,11 @@ import database.TicketEntity;
 public class BillViewer extends AppCompatActivity {
     public FloatingActionButton fabEdit, fabDelete, fabCrop, fabConfirmEdit;
     public DataManager DB;
-    int ticketId;
-    int missionID;
+    long ticketId;
     Context context;
     final int TICKET_MOD = 1;
     TicketEntity thisTicket;
     String ticketTitle = "", ticketAmount = "", ticketPeople = "", ticketAmountUn = "", ticketShop = "", ticketPath = ""; // ticketDate = ""
-    Date ticketDate;
     ImageView imgView;
 
     //Dal Maso
@@ -70,7 +68,7 @@ public class BillViewer extends AppCompatActivity {
     public void initialize(){
         //Get data from parent view
         Intent intent = getIntent();
-        ticketId = Singleton.getInstance().getTicketID();
+        ticketId = intent.getExtras().getLong(IntentCodes.INTENT_TICKET_ID);
         thisTicket = DB.getTicket(ticketId);
         ticketPath = thisTicket.getFileUri().toString().substring(7);
         ticketPeople = ""+thisTicket.getTagPlaces();
@@ -79,7 +77,6 @@ public class BillViewer extends AppCompatActivity {
         } else {
             ticketTitle = thisTicket.getTitle();
         }
-        ticketDate = thisTicket.getDate();
         if(thisTicket.getShop() == null || thisTicket.getShop().trim().compareTo("") == 0){
             ticketShop = getString(R.string.string_NoShop);
         } else {
@@ -95,32 +92,32 @@ public class BillViewer extends AppCompatActivity {
 
         //Title
         setTitle(ticketTitle);
-        TextView billLastMod = (TextView)findViewById(R.id.billDate);
+        TextView billLastMod = findViewById(R.id.billDate);
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        billLastMod.setText(formatter.format(ticketDate));
+        billLastMod.setText(formatter.format(thisTicket.getDate()));
 
         //ImageName
         TextView billName = (TextView)findViewById(R.id.billName);
         billName.setText(ticketTitle);
 
         //Total price
-        TextView billPrice = (TextView)findViewById(R.id.billTotal);
+        TextView billPrice = findViewById(R.id.billTotal);
         billPrice.setText(ticketAmount);
 
         //Total per person
-        TextView billPriceUn = (TextView)findViewById(R.id.billTotalUn);
+        TextView billPriceUn = findViewById(R.id.billTotalUn);
         billPriceUn.setText(ticketAmountUn);
 
         //Number of people
-        TextView billPeople = (TextView)findViewById(R.id.billPeople);
+        TextView billPeople = findViewById(R.id.billPeople);
         billPeople.setText(ticketPeople);
 
         //Shop
-        TextView billShop = (TextView)findViewById(R.id.billShop);
+        TextView billShop = findViewById(R.id.billShop);
         billShop.setText(ticketShop);
 
         //Full image view
-        imgView = (ImageView)findViewById(R.id.billImage);
+        imgView = findViewById(R.id.billImage);
 
         Glide.with(context)
                 .load(ticketPath)
@@ -128,20 +125,10 @@ public class BillViewer extends AppCompatActivity {
                 .skipMemoryCache(true)
                 .into(imgView);
 
-        fabCrop=(FloatingActionButton)findViewById(R.id.fabCrop);
-        fabDelete=(FloatingActionButton)findViewById(R.id.fabDelete);
-        fabCrop.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                cropPhoto(ticketId);
-            }//onClick
-        });
-        fabDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteTicket(ticketId);
-            }//onClick
-        });
+        fabCrop=findViewById(R.id.fabCrop);
+        fabDelete=findViewById(R.id.fabDelete);
+        fabCrop.setOnClickListener(v -> cropPhoto((int)ticketId));
+        fabDelete.setOnClickListener(v -> deleteTicket(ticketId));
     }
 
     /** Dal Maso
@@ -170,6 +157,7 @@ public class BillViewer extends AppCompatActivity {
             case R.id.action_editTicket:
                 //Open Edit Ticket Activity
                 Intent editTicket = new Intent(context, EditTicket.class);
+                editTicket.putExtra(IntentCodes.INTENT_TICKET_ID, thisTicket.getID());
                 startActivityForResult(editTicket, TICKET_MOD);
                 break;
 

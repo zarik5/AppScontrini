@@ -40,6 +40,7 @@ public class TicketEntity {
     private boolean isRefundable; //a ticket can be refundable or not
     private int[] ipErrorArray;
     private int[] ocrErrorArray;
+    private String currency;
 
 
     @ColumnInfo(name = Constants.MISSION_CHILD_COLUMNS)
@@ -300,6 +301,15 @@ public class TicketEntity {
     public void setOcrErrorArray(int[] ocrErrorArray) {
         this.ocrErrorArray = ocrErrorArray;
     }
+
+    public void setCurrency(String curr) {
+        currency = curr;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
 
 
     /**

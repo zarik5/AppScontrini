@@ -3,20 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
     android:clickable="true"
     android:focusableInTouchMode="true"
-    android:layout_height="match_parent"
     tools:context="com.ing.software.ticketapp.CheckPhotoActivity">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentTop="true"
         android:background="@drawable/appbar"
         android:elevation="15dp"
         android:gravity="top"
-        android:orientation="horizontal"
-        android:id="@+id/linearLayout">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnCheck_retry"

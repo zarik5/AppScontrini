@@ -18,7 +18,7 @@ import database.PersonEntity;
 
 public class EditPerson extends AppCompatActivity{
     public DataManager DB;
-    int personID;
+    long personID;
     Context context;
     PersonEntity thisPerson;
     String personName = "", personLastName = "", personAcademicTitle = "";
@@ -35,7 +35,7 @@ public class EditPerson extends AppCompatActivity{
         setContentView(R.layout.activity_edit_person);
 
         DB = new DataManager(context);
-        personID = Singleton.getInstance().getPersonID();
+        personID = getIntent().getExtras().getLong(IntentCodes.INTENT_PERSON_ID);
         thisPerson = DB.getPerson(personID);
 
         //Get data from parent view

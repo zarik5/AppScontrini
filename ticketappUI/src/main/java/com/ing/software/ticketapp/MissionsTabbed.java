@@ -22,7 +22,7 @@ public class MissionsTabbed extends AppCompatActivity {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     DataManager DB;
-    int personID;
+    long personID;
     PersonEntity thisPerson;
     final int MISSION_MOD = 1;
     final int PERSON_MOD = 2;
@@ -36,12 +36,12 @@ public class MissionsTabbed extends AppCompatActivity {
         setContentView(R.layout.activity_missions_tabbed);
 
         Intent intent = getIntent();
-        personID = Singleton.getInstance().getPersonID();
+        personID = intent.getExtras().getLong(IntentCodes.INTENT_PERSON_ID);
         DB = new DataManager(this);
         thisPerson = DB.getPerson(personID);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(thisPerson.getName()+" "+thisPerson.getLastName());
+        toolbar.setTitle(thisPerson.getLastName()+" "+thisPerson.getName());
         toolbar.setSubtitle("Missioni disponibili");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -124,7 +124,7 @@ public class MissionsTabbed extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             Bundle bundle = new Bundle();
-            bundle.putInt("personID", personID);
+            bundle.putInt("personID", (int)personID);
             switch(position){
                 case 0:
                     missionsOpen.setArguments(bundle);
@@ -182,7 +182,7 @@ public class MissionsTabbed extends AppCompatActivity {
     /** Dal Maso
      * Reload the activity
      */
-    private void reload() {
+    public void reload() {
         Intent intent = getIntent();
         finish();
         startActivity(intent);

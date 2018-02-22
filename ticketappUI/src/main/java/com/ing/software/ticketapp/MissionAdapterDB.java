@@ -33,6 +33,7 @@ public class MissionAdapterDB extends ArrayAdapter<MissionEntity> implements Swi
 
     Context context;
     String path = "";
+    long missionID = 0;
     List<MissionEntity> missions;
     DataManager DB;
 
@@ -44,7 +45,7 @@ public class MissionAdapterDB extends ArrayAdapter<MissionEntity> implements Swi
         super(context, textViewResourceId, objects);
         this.context = context;
         missions = objects;
-        DB = new DataManager(context);
+        DB = new DataManager(getContext());
     }
 
     /** Dal Maso
@@ -106,9 +107,10 @@ public class MissionAdapterDB extends ArrayAdapter<MissionEntity> implements Swi
                 if (swipeOpen) {
                     card.close();
                 } else {
+                	missionID = Integer.parseInt(view.getTag().toString());
                     Intent startTicketsView = new Intent(context, BillActivity.class);
-                    Singleton.getInstance().setMissionID((int) mission.getID());
-                    ((MissionsTabbed) context).startActivityForResult(startTicketsView, 1);
+                	startTicketsView.putExtra(IntentCodes.INTENT_MISSION_ID, missionID);
+                    ((MissionsTabbed) context).startActivity(startTicketsView);
                 }
             }
         });
@@ -122,9 +124,10 @@ public class MissionAdapterDB extends ArrayAdapter<MissionEntity> implements Swi
         btnUpdate.setOnClickListener(new View.OnClickListener(){
             public void onClick (View v){
                 //Open Edit Person Activity
+                missionID = Integer.parseInt(view.getTag().toString());
                 Intent editMission = new Intent(context, EditMission.class);
-                Singleton.getInstance().setMissionID((int)mission.getID());
-                ((MissionsTabbed)context).startActivityForResult(editMission, 1);
+                editMission.putExtra(IntentCodes.INTENT_MISSION_ID, missionID);
+                ((MissionsTabbed)context).startActivity(editMission);
             }
         });
 

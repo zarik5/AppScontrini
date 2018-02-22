@@ -118,7 +118,7 @@ public class PeopleAdapter extends ArrayAdapter<PersonEntity> implements SwipeLa
                     swipeLayout.close();
                 } else {
                     Intent missionTab = new Intent(context, MissionsTabbed.class);
-                    Singleton.getInstance().setPersonID((int) person.getID());
+                    missionTab.putExtra(IntentCodes.INTENT_PERSON_ID,person.getID());
                     ((MainActivity) context).startActivityForResult(missionTab, 1);
                 }
             }
@@ -135,7 +135,7 @@ public class PeopleAdapter extends ArrayAdapter<PersonEntity> implements SwipeLa
                 //Open Edit Person Activity
                 Intent editPerson = new Intent(context, EditPerson.class);
                 editPerson.putExtra("personID", person.getID());
-                Singleton.getInstance().setPersonID((int)person.getID());
+                editPerson.putExtra(IntentCodes.INTENT_PERSON_ID,person.getID());
                 ((MainActivity)context).startActivityForResult(editPerson, 1);
             }
         });

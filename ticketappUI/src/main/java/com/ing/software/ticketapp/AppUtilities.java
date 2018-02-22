@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import static com.ing.software.ticketapp.BillActivity.rotateImage;
 
@@ -40,9 +41,9 @@ public class AppUtilities {
             String newOut = formatCheck.format(out);
             int before = Integer.parseInt(newIn);
             int then = Integer.parseInt(newOut);
-            if(before <= then) {
+            if(before <= then)
                 return true;
-            }
+
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -81,10 +82,10 @@ public class AppUtilities {
     */
     public static  boolean checkIntervalDate(String start, String finish, String current)
     {
-        if(checkDate(start,current) && checkDate(current,finish)) {
+        if(checkDate(start,current) && checkDate(current,finish))
             return true;
-        }
-        return false;
+
+     return false;
     }
 
     public static Bitmap fromByteArrayToBitmap (byte[] data){
@@ -102,7 +103,9 @@ public class AppUtilities {
         Bitmap rotatedBitmap = img;
         try {
             ExifInterface ei = new ExifInterface(path);
-            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+            int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_UNDEFINED);
+
             switch (orientation) {
                 case ExifInterface.ORIENTATION_ROTATE_90:
                     rotatedBitmap = rotateImage(img, 90);
@@ -169,6 +172,30 @@ public class AppUtilities {
         }
         anim.setDuration(500);
         v.startAnimation(anim);
+    }
+
+    public static String localeToCurrencyAbbrev(Locale l) {
+        //switch does not work...
+        if (l == Locale.ITALY)
+            return "EUR";
+        if (l == Locale.UK)
+            return "GBP";
+        if (l == Locale.ITALY)
+            return "USD";
+        return "";
+    }
+
+    public static Locale currencyAbbrevToLocale(String s) {
+        switch (s) {
+            case ("EUR"):
+                return Locale.ITALY;
+            case ("USD"):
+                return Locale.US;
+            case ("GBP"):
+                return Locale.UK;
+            default:
+                return Locale.ITALY;
+        }
     }
 }
 

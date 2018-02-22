@@ -28,6 +28,7 @@ public class AddNewMission extends AppCompatActivity{
     TextView missionStart;
     TextView missionFinish;
     int personID = 1;
+    long missionID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class AddNewMission extends AppCompatActivity{
                     Intent intent = new Intent();
                     Intent startImageView = new Intent(context, BillActivity.class);
                     startImageView.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startImageView.putExtra(IntentCodes.INTENT_MISSION_ID,missionID);
                     context.startActivity(startImageView);
                     setResult(RESULT_OK, intent);
                     finish();
@@ -159,9 +161,7 @@ public class AddNewMission extends AppCompatActivity{
             e.printStackTrace();
         }
 
-        long missionID = DB.addMission(miss);
-        Singleton.getInstance().setMissionID((int)missionID);
-
+        missionID = DB.addMission(miss);
         return true;
     }
 

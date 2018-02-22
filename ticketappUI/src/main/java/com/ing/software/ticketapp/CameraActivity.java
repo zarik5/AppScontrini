@@ -34,6 +34,7 @@ public class CameraActivity extends Activity {
     private byte[] imageData;
     private static  final int FOCUS_AREA_SIZE= 300;
     public static final int MEDIA_TYPE_IMAGE = 1;
+    long missionId;
 
 
     @Override
@@ -43,6 +44,8 @@ public class CameraActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_camera);
 
+        missionId = getIntent().getExtras().getLong(IntentCodes.INTENT_MISSION_ID);
+
         initializeComponents();
     }
 
@@ -50,7 +53,7 @@ public class CameraActivity extends Activity {
      * Initialize all the components
      */
     public void initializeComponents(){
-        mCamera = getCameraInstance();
+        mCamera = BillActivity.getCameraInstance();
         mCamera.setDisplayOrientation(90);
 
         //Camera parameters
@@ -64,6 +67,9 @@ public class CameraActivity extends Activity {
                 size = sizes.get(i);
         }
         p.setPictureSize(size.width, size.height);
+        //p.setRotation(90);
+        //p.set("orientation", "portrait");
+        //p.set("rotation",90);
 
         mCamera.setParameters(p);
 
@@ -239,6 +245,7 @@ public class CameraActivity extends Activity {
         public void onPictureTaken(byte[] data, Camera camera) {
             Singleton.getInstance().setTakenPicure(data);
             Intent intent = new Intent(getApplicationContext(), CheckPhotoActivity.class);
+            intent.putExtra(IntentCodes.INTENT_MISSION_ID,missionId);
             startActivity(intent);
         }
     };
