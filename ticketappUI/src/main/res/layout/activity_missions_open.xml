@@ -30,10 +30,11 @@
         <ListView
             android:id="@+id/listMission"
             android:layout_width="match_parent"
-            android:layout_marginTop="3dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:layout_marginTop="3dp"
+            android:clipToPadding="false"
             android:divider="@null"
             android:dividerHeight="0dp" />
 

@@ -33,8 +33,10 @@
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            android:clipToPadding="false"
             android:divider="@null"
-            android:dividerHeight="0dp" />
+            android:dividerHeight="0dp"
+            android:paddingBottom="75dp" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab_addMission"

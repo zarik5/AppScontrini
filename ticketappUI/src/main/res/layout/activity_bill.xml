@@ -35,8 +35,10 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="3dp"
+            android:clipToPadding="false"
             android:divider="#00000000"
-            android:listSelector="@android:color/transparent" />
+            android:listSelector="@android:color/transparent"
+            android:paddingBottom="75dp" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
